@@ -1,0 +1,8 @@
+{
+  "FinalProjectStack": {
+    "TableName": "FinalProjectStack-FileMetadataTableE69EBE66-1D2ME2K65V2SM",
+    "BucketName": "finalprojectstack-filestoragebucket10e371b0-stijihvm4d0c",
+    "InstancePublicIP": "18.184.220.71",
+    "InstancePublicDNS": "ec2-18-184-220-71.eu-central-1.compute.amazonaws.com"
+  }
+}
