@@ -3,37 +3,60 @@ import { Template } from 'aws-cdk-lib/assertions';
 import * as FinalProject from '../lib/final_project-stack';
 
 describe('FinalProject Stack', () => {
-  let app: cdk.App;
-  let stack: FinalProject.FinalProjectStack;
-  let template: Template;
-
-  beforeEach(() => {
-    app = new cdk.App();
-    stack = new FinalProject.FinalProjectStack(app, 'MyTestStack');
-    template = Template.fromStack(stack);
+  const app = new cdk.App();
+  const stack = new FinalProject.FinalProjectStack(app, 'TestStack', {
+    clientEmail: 'test@example.com',
+    allowedFileExtensions: ['.pdf', '.doc', '.docx'],
+    stage: 'prod',
+    env: { account: '123456789012', region: 'eu-central-1' }
   });
+  const template = Template.fromStack(stack);
 
-  test('Lambda Function Created', () => {
-    template.hasResourceProperties('AWS::Lambda::Function', {
-      Runtime: 'nodejs18.x',
-      Handler: 'index.handler',
-    });
-  });
-
-  test('DynamoDB Table Created', () => {
-    template.hasResourceProperties('AWS::DynamoDB::Table', {
-      BillingMode: 'PAY_PER_REQUEST',
+  test('VPC Created', () => {
+    template.hasResourceProperties('AWS::EC2::VPC', {
+      CidrBlock: '10.0.0.0/16',
+      EnableDnsHostnames: true,
+      EnableDnsSupport: true,
     });
   });
 
   test('S3 Bucket Created', () => {
     template.hasResourceProperties('AWS::S3::Bucket', {
-      PublicAccessBlockConfiguration: {
-        BlockPublicAcls: true,
-        BlockPublicPolicy: true,
-        IgnorePublicAcls: true,
-        RestrictPublicBuckets: true,
+      CorsConfiguration: {
+        CorsRules: [
+          {
+            AllowedHeaders: ['*'],
+            AllowedMethods: ['GET', 'POST', 'PUT'],
+            AllowedOrigins: ['*'],
+          },
+        ],
       },
+    });
+  });
+
+  test('DynamoDB Table Created', () => {
+    template.hasResourceProperties('AWS::DynamoDB::Table', {
+      KeySchema: [
+        {
+          AttributeName: 'id',
+          KeyType: 'HASH',
+        },
+        {
+          AttributeName: 'uploadDate',
+          KeyType: 'RANGE',
+        },
+      ],
+      BillingMode: 'PAY_PER_REQUEST',
+    });
+  });
+
+  test('Lambda Functions Created', () => {
+    template.resourceCountIs('AWS::Lambda::Function', 3);
+  });
+
+  test('EC2 Instance Created', () => {
+    template.hasResourceProperties('AWS::EC2::Instance', {
+      InstanceType: 't2.micro',
     });
   });
 });

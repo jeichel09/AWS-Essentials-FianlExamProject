@@ -8,7 +8,9 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write \"**/*.ts\""
   },
   "devDependencies": {
     "@aws-sdk/client-dynamodb": "^3.699.0",
@@ -17,7 +19,11 @@
     "@types/aws-lambda": "^8.10.145",
     "@types/jest": "^29.5.14",
     "@types/node": "22.7.9",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
     "aws-cdk": "2.170.0",
+    "aws-sdk-client-mock": "^3.0.0",
+    "eslint": "^8.54.0",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
@@ -27,6 +33,7 @@
   "dependencies": {
     "@aws-sdk/client-ses": "^3.699.0",
     "aws-cdk-lib": "2.170.0",
+    "aws-sdk-client-mock":"4.1.0",
     "constructs": "^10.0.0"
   }
 }
