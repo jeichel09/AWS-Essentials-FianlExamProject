@@ -77,6 +77,12 @@ export class FinalProjectStack extends cdk.Stack {
     const bucket = new s3.Bucket(this, 'FileStorageBucket', {
       removalPolicy: RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
+      blockPublicAccess: new s3.BlockPublicAccess({
+        blockPublicAcls: true,
+        blockPublicPolicy: true,
+        ignorePublicAcls: true,
+        restrictPublicBuckets: true
+      }),
       cors: [
         {
           allowedMethods: [
