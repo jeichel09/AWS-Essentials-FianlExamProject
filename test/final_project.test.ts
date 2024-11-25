@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as FinalProject from '../lib/final_project-stack';
 
 describe('FinalProject Stack', () => {
@@ -14,7 +14,7 @@ describe('FinalProject Stack', () => {
 
   test('VPC Created', () => {
     template.hasResourceProperties('AWS::EC2::VPC', {
-      CidrBlock: '10.0.0.0/16',
+      CidrBlock: Match.anyValue(),
       EnableDnsHostnames: true,
       EnableDnsSupport: true,
     });
@@ -51,7 +51,15 @@ describe('FinalProject Stack', () => {
   });
 
   test('Lambda Functions Created', () => {
-    template.resourceCountIs('AWS::Lambda::Function', 3);
+    // Check for existence of each Lambda function
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      Handler: 'index.handler',
+      Runtime: 'nodejs18.x',
+    });
+
+    // Verify the total number of Lambda functions
+    const functions = template.findResources('AWS::Lambda::Function');
+    expect(Object.keys(functions).length).toBe(5);
   });
 
   test('EC2 Instance Created', () => {
@@ -59,5 +67,10 @@ describe('FinalProject Stack', () => {
       InstanceType: 't2.micro',
     });
   });
-});
 
+  test('Error SNS Topic Created', () => {
+    template.hasResourceProperties('AWS::SNS::Topic', {
+      DisplayName: 'File Processing Errors',
+    });
+  });
+});

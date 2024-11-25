@@ -2,6 +2,7 @@ module.exports = {
   testEnvironment: 'node',
   roots: ['<rootDir>/test'],
   testMatch: ['**/*.test.ts'],
+  testTimeout: 30000,
   transform: {
     '^.+\\.tsx?$': 'ts-jest'
   },

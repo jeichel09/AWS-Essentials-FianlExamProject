@@ -45,8 +45,19 @@ describe('S3 Processing Lambda', () => {
 
     await handler(event as any);
 
-    expect(dynamoDbMock.calls()).toHaveLength(1);
-    expect(snsMock.calls()).toHaveLength(0);
+    expect(dynamoDbMock.commandCalls(PutItemCommand)).toHaveLength(1);
+    expect(snsMock.commandCalls(PublishCommand)).toHaveLength(0);
+    
+    // Verify the content of the DynamoDB call
+    const putItemCall = dynamoDbMock.commandCalls(PutItemCommand)[0];
+    expect(putItemCall.args[0].input).toMatchObject({
+      TableName: 'TestTable',
+      Item: expect.objectContaining({
+        fileExtension: { S: '.pdf' },
+        fileName: { S: 'test-file.pdf' },
+        fileSize: { N: '1024' }
+      })
+    });
   });
 
   test('rejects invalid file extension', async () => {
@@ -63,7 +74,14 @@ describe('S3 Processing Lambda', () => {
 
     await handler(event as any);
 
-    expect(dynamoDbMock.calls()).toHaveLength(0);
-    expect(snsMock.calls()).toHaveLength(1);
+    expect(dynamoDbMock.commandCalls(PutItemCommand)).toHaveLength(0);
+    expect(snsMock.commandCalls(PublishCommand)).toHaveLength(1);
+    
+    // Verify SNS message content
+    const publishCall = snsMock.commandCalls(PublishCommand)[0];
+    expect(publishCall.args[0].input).toMatchObject({
+      TopicArn: 'arn:aws:sns:region:account:topic',
+      Message: expect.stringContaining('Invalid file extension: .exe')
+    });
   });
 });

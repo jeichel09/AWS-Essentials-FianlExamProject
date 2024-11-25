@@ -32,7 +32,7 @@ describe('Cleanup Lambda', () => {
 
     await handler();
 
-    expect(s3Mock.calls()).toHaveLength(2);
+    expect(s3Mock.commandCalls(DeleteObjectsCommand)).toHaveLength(1);
   });
 
   test('skips new files', async () => {
@@ -49,6 +49,6 @@ describe('Cleanup Lambda', () => {
 
     await handler();
 
-    expect(s3Mock.calls()).toHaveLength(0);
+    expect(s3Mock.commandCalls(DeleteObjectsCommand)).toHaveLength(0);
   });
 });
