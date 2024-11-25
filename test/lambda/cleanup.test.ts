@@ -1,4 +1,4 @@
-import { handler } from '../src/cleanup';
+import { handler } from '../../src/cleanup';
 import { mockClient } from 'aws-sdk-client-mock';
 import { 
   S3Client, 
@@ -49,6 +49,6 @@ describe('Cleanup Lambda', () => {
 
     await handler();
 
-    expect(s3Mock.calls(DeleteObjectsCommand)).toHaveLength(0);
+    expect(s3Mock.calls()).toHaveLength(0);
   });
 });
